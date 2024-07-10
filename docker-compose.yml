@@ -1,0 +1,40 @@
+services:
+  metabase:
+    container_name: metabase
+    image: bobblybook/metabase:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - MB_DB_TYPE=${MB_DB_TYPE}
+      - MB_DB_DBNAME=${MB_DB_NAME}
+      - MB_DB_PORT=${MB_DB_PORT}
+      - MB_DB_USER=${MB_DB_USER}
+      - MB_DB_PASS=${MB_DB_PASSWORD}
+      - MB_DB_HOST=db
+    volumes:
+      - metabase-data:/metabase-data
+    networks:
+      - metabase-network
+
+  db:
+    image: postgres:latest
+    ports:
+      - "${MB_DB_PORT}:${MB_DB_PORT}"
+    environment:
+      POSTGRES_DB: ${MB_DB_NAME}
+      POSTGRES_USER: ${MB_DB_USER}
+      POSTGRES_PASSWORD: ${MB_DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - metabase-network
+
+volumes:
+  metabase-data:
+    driver: local
+  db-data:
+    driver: local
+
+networks:
+  metabase-network:
+    name: metabase-network
